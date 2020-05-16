@@ -1,9 +1,16 @@
 from screen_pg import ScreenPg
+from event_pg import EventPg
+from spaceship_guns import SpaceshipGuns
+from spaceship import Spaceship
+from oscillator import Oscillator
+from stick import Stick
 from sys import exit
 import numpy as np
 import time
 
 spg = ScreenPg()
+epg = EventPg(spg.pg)
+
 
 spg.beggin()
 spg.set_title('Game of Life')
@@ -23,52 +30,10 @@ notDeath, create = variant.split('/')
 
 # Estado de las celdas. Vivas = 1, Muertas = 0.
 gameState = np.zeros((nxC, nyC))
-
-# Autómata palo.
-stick = [[1],
-         [1],
-         [1]]
-
-stickPosX = 5
-stickPosY = 3
-
-# Autómata movil.
-spaceship = [[0, 1, 0],
-             [0, 0, 1],
-             [1, 1, 1]]
-
-spaceshipPosX = 20
-spaceshipPosY = 21
-
-# Autómata pistola d eplaneadores.
-spaceshipGuns = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-                 [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                 [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-spaceshipGunsPosX = 50
-spaceshipGunsPosY = 50
-
-# Autómata oscilador.
-doubleEight = [[0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0],
-               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-               [1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1],
-               [1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1],
-               [1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1],
-               [0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0],
-               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-               [0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0],
-               [1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1],
-               [1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1],
-               [1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1],
-               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-               [0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0]]
-doubleEightPosX = 50
-doubleEightPosY = 10
+# models
+spaceship_guns = SpaceshipGuns(0, 0)
+spaceship = Spaceship(40, 80)
+stick = Stick(0, 30)
 
 def __seed__(model, posX, posY, origin):
     for i in range(0, len(model)): # Height / row
@@ -76,10 +41,14 @@ def __seed__(model, posX, posY, origin):
            if model[i][j]:
                origin[j + posX, i + posY] = 1
 
-__seed__(stick, stickPosX, stickPosY, gameState)
-# __seed__(spaceship, spaceshipPosX, spaceshipPosY, gameState)
-__seed__(spaceshipGuns, spaceshipGunsPosX, spaceshipGunsPosY, gameState)
-__seed__(doubleEight, doubleEightPosX, doubleEightPosY, gameState)
+__seed__(stick.model(), stick.posX, stick.posY, gameState)
+__seed__(np.rot90(spaceship.model()), spaceship.posX, spaceship.posY, gameState)
+__seed__(spaceship_guns.model(), spaceship_guns.posX, spaceship_guns.posY, gameState)
+
+oscillators = [(nxC - 17, 4), (4, nyC - 17)]
+for coors in oscillators:
+    oscilltor = Oscillator(coors[0], coors[1])
+    __seed__(oscilltor.model(), oscilltor.posX, oscilltor.posY, gameState)
 
 # spaceship = np.rot90(spaceship)
 
@@ -89,28 +58,25 @@ pauseExect = False
 # Bucle de ejecición.
 running = True
 while running:
+    ev = epg.get_event()
+    running = not epg.event_close(ev)
+
     newGameState = np.copy(gameState)
-    # spg.screen.fill(bg)
     spg.set_background()
     # time.sleep(sleep)
 
-    # Registramos eventos de teclado y ratón.
-    ev = spg.pg.event.get()
+    if epg.pause_exec(ev):
+        pauseExect = not pauseExect
 
-    for event in ev:
-        # Detectamos si se presiona una tecla.
-        if event.type == spg.pg.KEYDOWN:
-            pauseExect = not pauseExect
-        # Detectamos si se presiona el ratón.
-        mouseClick = spg.pg.mouse.get_pressed()
+    mouseClick = epg.do_mouse_pressed()
 
-        if sum(mouseClick) > 0:
-            posX, posY = spg.pg.mouse.get_pos()
-            celX, celY = int(np.floor(posX / dimCW)), int(np.floor(posY / dimCH))
-            newGameState[celX, celY] = not mouseClick[2] 
+    if sum(mouseClick) > 0:
+        posX, posY = epg.mouse_get_pos()
+        celX, celY = int(np.floor(posX / dimCW)), int(np.floor(posY / dimCH))
+        newGameState[celX, celY] = not mouseClick[2] 
 
-    for y in range(0, nxC):
-        for x in range(0, nyC):
+    for y in range(0, nyC):
+        for x in range(0, nxC):
             if not pauseExect:
                 # Calculamos el número de vecinos cercanos.
                 n_neigh = gameState[(x - 1) % nxC, (y - 1) % nyC] + \
@@ -140,6 +106,6 @@ while running:
                 spg.draw_polygon((128, 128, 128), poly, 0)
     # Actualizamos el estado del juego.
     gameState = np.copy(newGameState)
-    spg.pg.display.flip()
+    spg.update()
 exit()
 
