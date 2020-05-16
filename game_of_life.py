@@ -1,23 +1,17 @@
-import pygame
+from screen_pg import ScreenPg
+from sys import exit
 import numpy as np
 import time
 
-pygame.init()
+spg = ScreenPg()
 
-# Ancho y alto de la pantalla.
-width, height = 800, 800
-# creación de la pantalla.
-screen = pygame.display.set_mode((height, width))
-
-# Color dle fondo = Casi negro, casi oscuro.
-bg = 25, 25, 25
-# Pintamos el fondo con el color elegido.
-screen.fill(bg)
+spg.beggin()
+spg.set_title('Game of Life')
 
 nxC, nyC = 100, 100
 
-dimCW = width / nxC
-dimCH = height / nyC
+dimCW = spg.width / nxC
+dimCH = spg.height / nyC
 sleep = 0.1
 variant = '23/3'
 # variant = '1357/1357'
@@ -93,23 +87,25 @@ __seed__(doubleEight, doubleEightPosX, doubleEightPosY, gameState)
 pauseExect = False
 
 # Bucle de ejecición.
-while True:
+running = True
+while running:
     newGameState = np.copy(gameState)
-    screen.fill(bg)
+    # spg.screen.fill(bg)
+    spg.set_background()
     # time.sleep(sleep)
 
     # Registramos eventos de teclado y ratón.
-    ev = pygame.event.get()
+    ev = spg.pg.event.get()
 
     for event in ev:
         # Detectamos si se presiona una tecla.
-        if event.type == pygame.KEYDOWN:
+        if event.type == spg.pg.KEYDOWN:
             pauseExect = not pauseExect
         # Detectamos si se presiona el ratón.
-        mouseClick = pygame.mouse.get_pressed()
+        mouseClick = spg.pg.mouse.get_pressed()
 
         if sum(mouseClick) > 0:
-            posX, posY = pygame.mouse.get_pos()
+            posX, posY = spg.pg.mouse.get_pos()
             celX, celY = int(np.floor(posX / dimCW)), int(np.floor(posY / dimCH))
             newGameState[celX, celY] = not mouseClick[2] 
 
@@ -139,10 +135,11 @@ while True:
                     ((x)     * dimCW, (y + 1) * dimCH)]
             # Y dibujamos la celda para cada par de x e y.
             if newGameState[x, y] == 0:
-                pygame.draw.polygon(screen, (128, 128, 128), poly, 1)
+                spg.draw_polygon((128, 128, 128), poly, 1)
             else:
-                pygame.draw.polygon(screen, (128, 128, 128), poly, 0)
+                spg.draw_polygon((128, 128, 128), poly, 0)
     # Actualizamos el estado del juego.
     gameState = np.copy(newGameState)
-    pygame.display.flip()
+    spg.pg.display.flip()
+exit()
 
