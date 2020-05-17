@@ -89,7 +89,7 @@ while running:
             poly = gol.polygon(x, y)
             # Y dibujamos la celda para cada par de x e y.
             if new_game_state[x, y] == 1:
-                spg.draw_polygon((31, 184, 163), poly, 0)
+                spg.draw_polygon((31, 184, 163), poly, 1)
     # Actualizamos el estado del juego.
     gol.game_state = np.copy(new_game_state)
     spg.update()
