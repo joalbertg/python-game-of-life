@@ -1,13 +1,11 @@
-class Stick:
+from automaton import Automaton
+
+class Stick(Automaton):
     # Autómata palo.
-    def __init__(self, posX = 0, posY = 0):
-        self.posX = posX
-        self.posY = posY
+    def __init__(self, pos_x = 0, pos_y = 0):
+        super(Stick, self).__init__(pos_x, pos_y)
 
-    __model = [[1],
-               [1],
-               [1]]
-
-    def model(self):
-        return self.__model
+    model = [[1],
+             [1],
+             [1]]
 
