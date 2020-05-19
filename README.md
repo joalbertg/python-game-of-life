@@ -14,7 +14,7 @@ or run `pip3 install -r requirements.txt`
 pypenv run python __main__.py
 ```
 
-## Screnshots
+## Screenshots
 
 <p align="center">
   <kbd>
